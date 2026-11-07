@@ -551,7 +551,9 @@ fn colour(bytes: &[u8]) -> [u8; 4] {
 
 /// Linux (M16.23): under a temporary `XDG_DATA_DIRS` a desktop entry's `Icon=name` finds the
 /// hicolor theme's PNG nearest the size asked; an absolute `Icon=` file is read as it is; an
-/// SVG-only icon, an SVG file and a name with a folder in it are none.
+/// SVG-only icon, an SVG file and a name with a folder in it are none. Unix only: an absolute
+/// `Icon=` is a Unix path, which a Windows drive path cannot be.
+#[cfg(unix)]
 #[test]
 fn linux_finds_a_desktop_entrys_icon_in_the_hicolor_theme() {
     let dir = tempfile::tempdir().unwrap();

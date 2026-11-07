@@ -57,8 +57,9 @@ fn no_bus() -> native::ShowItems {
     Box::new(|_| Err("no bus in tests".into()))
 }
 
+/// A packaging file's text with `\n` line ends, however the checkout wrote them (`core.autocrlf`).
 fn packaging(rel: &str) -> String {
-    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packaging").join(rel)).unwrap()
+    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packaging").join(rel)).unwrap().replace("\r\n", "\n")
 }
 
 /// Linux's freedesktop folders are `:`-separated lists of Unix paths: these run where that code

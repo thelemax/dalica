@@ -224,6 +224,13 @@ fn accept(listener: TcpListener, shared: Arc<Shared>) {
     }
 }
 
+/// Ends the connection with the end of the stream: our side's writes are finished first, so the
+/// client reads its last reply and then the end, also on Windows, where closing a socket with
+/// bytes unread resets it and the client sees an error instead.
+fn close(out: &TcpStream) {
+    let _ = out.shutdown(std::net::Shutdown::Write);
+}
+
 /// One error line to a connection over the limit, then close it. Bounded, so a client that does
 /// not read cannot stall the listener.
 fn refuse(mut stream: TcpStream) {
@@ -392,10 +399,10 @@ fn connection(stream: TcpStream, id: u64, shared: &Shared) {
             Err(LineError::Timeout) if !authed => {
                 let e = Error::new(Code::Unauthorized, format!("no auth within {} s; closing the connection", shared.auth_within.as_secs()));
                 write(&mut out, &Value::Null, &Err(e));
-                return;
+                return close(&out);
             }
             // Idle: the client reconnects (§4).
-            Err(LineError::Timeout) => return,
+            Err(LineError::Timeout) => return close(&out),
             Err(LineError::TooLong) => {
                 write(&mut out, &Value::Null, &Err(too_long()));
                 return;

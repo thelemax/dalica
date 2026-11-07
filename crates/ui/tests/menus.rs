@@ -768,7 +768,8 @@ fn the_in_window_bar_draws_the_same_layout_on_every_os() {
     win.click("menu:Tools");
     assert!(win.find("menuitem:app.preferences").is_some(), "Tools ▸ Options… is drawn");
 
-    let src = include_str!("../src/menus.rs");
+    // `\n` line ends, however the checkout wrote them (`core.autocrlf`).
+    let src = include_str!("../src/menus.rs").replace("\r\n", "\n");
     let start = src.find("pub fn show_bar(").expect("show_bar");
     let body = src.get(start..).and_then(|s| s.find("\n}\n").and_then(|end| s.get(..end))).expect("show_bar's body");
     assert!(!body.contains("Platform::current()"), "show_bar must not draw a per-OS layout");

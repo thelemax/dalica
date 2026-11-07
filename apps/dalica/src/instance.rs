@@ -265,10 +265,20 @@ fn open_lock(dir: &Path) -> Result<File, String> {
         Err(_) => match dalica_fs::exact_file(dir, LOCK_FILE, b"") {
             // Made by a launch started at the same moment: the same file.
             Ok(_) | Err(dalica_fs::Error::Exists(_)) => {}
+            // Made by us, then locked by a launch started at the same moment before our read back:
+            // Windows refuses to read a locked range (Unix locks never block a read). The lock file
+            // is empty and in place, so it is the file to open.
+            Err(dalica_fs::Error::Io { op: "verify", source, .. })
+                if locked_by_another(&source) && std::fs::symlink_metadata(&path).is_ok_and(|m| m.is_file()) => {}
             Err(e) => return Err(e.to_string()),
         },
     }
     File::open(&path).map_err(|e| format!("{}: {e}", path.display()))
+}
+
+/// Whether `e` is Windows refusing a read of a range another process locked (`ERROR_LOCK_VIOLATION`).
+fn locked_by_another(e: &std::io::Error) -> bool {
+    cfg!(windows) && e.raw_os_error() == Some(33)
 }
 
 /// Listens on a loopback port, writes the port and a fresh token to the info file and serves the
