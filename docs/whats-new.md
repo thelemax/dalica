@@ -21,7 +21,7 @@ This file is the user-facing changelog. Help ▸ Release Notes compiles it into 
   its translation until the catalogs catch up (docs/localization.md → Release notes).
 -->
 
-## 1.2.0-rc.1 — November 2026
+## 1.2.0 — November 2026
 
 This release candidate adds French to the languages Dalica can speak.
 

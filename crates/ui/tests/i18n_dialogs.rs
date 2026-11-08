@@ -66,6 +66,8 @@ fn user_data(d: &mut Driver) -> BTreeSet<String> {
     for m in baked.models {
         out.extend([m.company, m.model, m.version].map(str::to_string));
     }
+    // The version is baked into the binary like the commit: `1.2.0-rc.1` is not a translatable text.
+    out.insert(baked.version.to_string());
     out.extend(baked.commit.map(|c| c.chars().take(dalica_core::build::SHORT_SHA).collect::<String>()));
     out.extend(baked.build_date.map(str::to_string));
     out.insert(dalica_ui::dialogs::about::LICENCE.to_string());
