@@ -21,6 +21,17 @@ This file is the user-facing changelog. Help ▸ Release Notes compiles it into 
   its translation until the catalogs catch up (docs/localization.md → Release notes).
 -->
 
+## 1.2.0-rc.1 — November 2026
+
+This release candidate adds French to the languages Dalica can speak.
+
+### Languages
+
+- Options ▸ General ▸ Language now lists Français. With Language on System, Dalica follows your
+  system and shows French when your system speaks it; choosing a language there always wins.
+- The French interface is a draft made with a machine's help and has not been reviewed by a fluent
+  speaker yet, so expect rough wording here and there. Release notes are not translated.
+
 ## 1.1.0 — November 2026
 
 Dalica 1.1 comes in fifteen themes, finds photos by colour, plays slideshows inside its window,
