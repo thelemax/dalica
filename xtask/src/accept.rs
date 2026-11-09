@@ -43,8 +43,6 @@ pub fn accept_with(root: &Path, milestone: u32, headless: bool, quiet: bool, sui
     let cargo = std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into());
     let mut cmd = Command::new(cargo);
     cmd.current_dir(root).args(["test", "-p", "dalica-acceptance", "--test", &name, "--", "--nocapture"]);
-    // The acceptance tests start `dalica` and `dalica-cli`, whose fingerprints are English.
-    crate::ci::pin_system_language(&mut cmd);
     if headless {
         cmd.env("DALICA_ACCEPT_HEADLESS", "1");
     }

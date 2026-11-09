@@ -87,19 +87,11 @@ pub fn limit_threads(cmd: &mut Command) {
     }
 }
 
-/// Stands in for the system's languages in every cargo the gates run: System reads as English
-/// under test on every machine (a French system would otherwise draw the interface the tests and
-/// the fingerprints read in French); a language a test chooses still wins.
-pub fn pin_system_language(cmd: &mut Command) {
-    cmd.env("DALICA_SYSTEM_LANGUAGES", "en");
-}
-
 fn cargo_env(root: &Path, args: &[&str], env: &[(&str, &str)]) -> Result<(), String> {
     let cargo = std::env::var_os("CARGO").unwrap_or_else(|| "cargo".into());
     let mut cmd = Command::new(cargo);
     cmd.current_dir(root).args(args);
     limit_threads(&mut cmd);
-    pin_system_language(&mut cmd);
     for (k, v) in env {
         cmd.env(k, v);
     }
@@ -670,15 +662,6 @@ mod tests {
         assert_eq!(parallelism(None, 8, 0, None), 8);
         assert_eq!(available_gib("MemTotal: 32000000 kB\nMemAvailable:   20971520 kB\n"), Some(20));
         assert_eq!(available_gib("nothing"), None);
-    }
-
-    #[test]
-    fn every_gate_cargo_reads_the_system_as_english() {
-        // The acceptance steps build their own cargo: a French machine drew French fingerprints.
-        let mut cmd = Command::new("cargo");
-        pin_system_language(&mut cmd);
-        let pinned = cmd.get_envs().find(|(k, _)| *k == "DALICA_SYSTEM_LANGUAGES").and_then(|(_, v)| v);
-        assert_eq!(pinned, Some(std::ffi::OsStr::new("en")));
     }
 
     #[test]
